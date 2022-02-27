@@ -45,3 +45,36 @@ app.post("/articles", (req, res) => {
     res.send("saved" + article);
   });
 });
+
+app
+  .route("/articles/:articleTitle")
+  .get(function (req, res) {
+    Article.findOne(
+      { title: req.params.articleTitle },
+      function (err, article) {
+        if (err) {
+          res.send(err);
+          return;
+        }
+        if (!article) {
+          res.send("Not found");
+          return;
+        }
+        res.send(article);
+      }
+    );
+  })
+  .put(function (req, res) {
+    Article.updateOne(
+      { title: req.params.articleTitle },
+      { title: req.body.title, content: req.body.content },
+      { upsert: true },
+      function (err, article) {
+        if (!err) {
+          res.send("updated");
+          return;
+        }
+        res.send("error");
+      }
+    );
+  });
